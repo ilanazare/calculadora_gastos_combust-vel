@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Gastos com Combustível</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #3498db;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block;
+            margin: 0 auto;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #resultados {
+            margin-top: 30px;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #resultados h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+
+        .result-card {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .result-card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .result-card p {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 0;
+            color: #27ae60;
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .result-card p {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Gastos com Combustível</h1>
+        
+        <div id="formulario">
+            <button id="iniciar">Iniciar Cálculo</button>
+        </div>
+        
+        <div id="resultados" class="hidden">
+            <h2>Resultados do Cálculo</h2>
+            <div class="result-card">
+                <h3>Consumo Necessário</h3>
+                <p id="consumo-necessario">-</p>
+            </div>
+            
+            <div class="result-card">
+                <h3>Menor Preço Pesquisado</h3>
+                <p id="menor-preco">-</p>
+            </div>
+            
+            <div class="result-card">
+                <h3>Média de Preços</h3>
+                <p id="media-precos">-</p>
+            </div>
+            
+            <div class="result-card">
+                <h3>Gasto Diário</h3>
+                <p id="gasto-diario">-</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('iniciar').addEventListener('click', function() {
+            function validarNumeroFloat(mensagem) {
+                let valor;
+                do {
+                    valor = parseFloat(prompt(mensagem));
+                    if (isNaN(valor) || valor <= 0) {
+                        alert("Por favor, digite um número válido, maior que zero.");
+                    }
+                } while (isNaN(valor) || valor <= 0);
+                return valor;
+            }
+
+            function validarNumeroInt(mensagem) {
+                let valor;
+                do {
+                    const input = prompt(mensagem);
+                    valor = parseFloat(input);
+                    
+                    if (isNaN(valor) || valor <= 0 || !Number.isInteger(valor)) {
+                        alert("Por favor, digite um número inteiro válido, maior que zero.");
+                        valor = NaN;
+                    } else {
+                        valor = parseInt(input);
+                    }
+                } while (isNaN(valor) || valor <= 0 || !Number.isInteger(valor));
+                return valor;
+            }
+
+            const distanciaPercorrida = validarNumeroFloat("Digite a distância percorrida de casa até o trabalho (em km):");
+            const consumoMedio = validarNumeroFloat("Digite o consumo médio do seu veículo (em km/l):");
+            const consumoNecessarioLitros = distanciaPercorrida / consumoMedio;
+
+            const quantidadePostos = validarNumeroInt("Digite a quantidade de postos de combustível pesquisados:");
+
+            let menorValor = Infinity;
+            let somaValores = 0;
+            
+            for (let i = 1; i <= quantidadePostos; i++) {
+                const valorCombustivel = validarNumeroFloat(`Digite o valor do combustível no posto ${i} (em R$):`);
+                if (valorCombustivel < menorValor) {
+                    menorValor = valorCombustivel;
+                }
+                somaValores += valorCombustivel;
+            }
+            
+            const mediaValores = somaValores / quantidadePostos;
+            const gastoDiario = 2 * (consumoNecessarioLitros * menorValor);
+   
+            document.getElementById('consumo-necessario').textContent = `${consumoNecessarioLitros.toFixed(2)} litros`;
+            document.getElementById('menor-preco').textContent = `R$ ${menorValor.toFixed(2)}`;
+            document.getElementById('media-precos').textContent = `R$ ${mediaValores.toFixed(2)}`;
+            document.getElementById('gasto-diario').textContent = `R$ ${gastoDiario.toFixed(2)}`;
+
+            document.getElementById('resultados').classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
